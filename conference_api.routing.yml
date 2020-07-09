@@ -1,0 +1,8 @@
+conference_api.api_controller_index:
+  path: '/api/{path}'
+  defaults:
+    _controller: '\Drupal\conference_api\Controller\ApiController::index'
+    _title: 'Conference API'
+    path: ~
+  requirements:
+    _permission: 'access content'

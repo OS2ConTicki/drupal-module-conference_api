@@ -1,0 +1,8 @@
+name: 'Conference API'
+type: module
+description: 'Conference API.'
+core_version_requirement: ^9
+package: Conference
+# version: VERSION
+dependencies:
+  - drupal:jsonapi

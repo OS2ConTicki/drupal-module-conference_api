@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+  <description>The coding standard.</description>
+
+  <file>conference_api.info.yml</file>
+  <file>conference_api.routing.yml</file>
+  <file>conference_api.services.yml</file>
+  <file>src/</file>
+
+  <arg value="p"/>
+
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md,yml"/>
+  <config name="drupal_core_version" value="8"/>
+
+  <rule ref="./vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml">
+    <!-- <exclude name="Drupal.Files.TxtFileLineLength.TooLong"/> -->
+    <!-- We want to be able to use "package" and "version" in our custom modules -->
+    <exclude name="Drupal.InfoFiles.AutoAddedKeys.Project"/>
+    <exclude name="Drupal.InfoFiles.AutoAddedKeys.Version"/>
+  </rule>
+</ruleset>

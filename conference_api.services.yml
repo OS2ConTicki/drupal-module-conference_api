@@ -1,0 +1,5 @@
+services:
+  conference_api_path_processor.api:
+    class: Drupal\conference_api\PathProcessor\PathProcessor
+    tags:
+      - { name: path_processor_inbound, priority: 200 }

@@ -1,0 +1,30 @@
+{
+    "name": "drupal/conference_api",
+    "description": "Module implementing the Conference API",
+    "type": "drupal-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mikkel Ricky",
+            "email": "rimi@aarhus.dk"
+        }
+    ],
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+        "drupal/coder": "^8.3.1"
+    },
+    "scripts": {
+        "check-coding-standards/phpcs": [
+            "vendor/bin/phpcs --standard=phpcs.xml.dist"
+        ],
+        "check-coding-standards": [
+            "@check-coding-standards/phpcs"
+        ],
+        "apply-coding-standards/phpcs": [
+            "vendor/bin/phpcbf --standard=phpcs.xml.dist"
+        ],
+        "apply-coding-standards": [
+            "@apply-coding-standards/phpcs"
+        ]
+    }
+}
