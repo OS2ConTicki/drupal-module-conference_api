@@ -2,11 +2,13 @@
 
 namespace Drupal\conference_api\Controller;
 
+use Drupal\Core\Routing\UrlGeneratorInterface;
 use Exception;
 use InvalidArgumentException;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -21,13 +23,18 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
    *
    * @var Symfony\Component\HttpKernel\HttpKernelInterface
    */
-  protected $httpKernel;
+  private $httpKernel;
+
+  /**
+   * @var \Drupal\Core\Routing\UrlGeneratorInterface*/
+  private $urlGenerator;
 
   /**
    * Constructor.
    */
-  public function __construct(HttpKernelInterface $httpKernel) {
+  public function __construct(HttpKernelInterface $httpKernel, UrlGeneratorInterface $urlGenerator) {
     $this->httpKernel = $httpKernel;
+    $this->urlGenerator = $urlGenerator;
   }
 
   /**
@@ -35,7 +42,8 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('http_kernel.basic')
+      $container->get('http_kernel.basic'),
+      $container->get('url_generator')
     );
   }
 
@@ -46,15 +54,17 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
    */
   public function index(Request $request, string $path = NULL): Response {
     // Check if our path processor has set an api path.
-    if (NULL === $path) {
-      $path = $request->get('api_path');
-    }
+    $path = $request->get('api_path', $path);
 
     try {
       $requestPath = $this->getJsonApiPath($path);
 
       if (NULL === $requestPath) {
         throw new BadRequestHttpException(sprintf('Invalid path: %s', $path));
+      }
+
+      if (empty($requestPath)) {
+        return $this->generateIndex();
       }
     }
     catch (Exception $exception) {
@@ -74,6 +84,26 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
   /**
+   *
+   */
+  private function generateIndex(): Response {
+    return new JsonResponse([
+      'conference' => $this->urlGenerator->generate(
+        'conference_api.api_controller_index',
+        [
+          'path' => 'conference',
+        ],
+        UrlGeneratorInterface::ABSOLUTE_URL),
+      'event' => $this->urlGenerator->generate(
+        'conference_api.api_controller_index',
+        [
+          'path' => 'event',
+        ],
+        UrlGeneratorInterface::ABSOLUTE_URL),
+    ]);
+  }
+
+  /**
    * Converts JSON:API data to Conference API data.
    */
   private function convertContent(string $content): string {
@@ -84,11 +114,15 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
    * Get JSON:API path from a Conference API path.
    */
   private function getJsonApiPath(string $path = NULL): ?string {
-    $parts = explode('/', $path);
-    if ('api' !== ($parts[1] ?? NULL)) {
+    $parts = array_values(array_filter(explode('/', $path)));
+    if (empty($parts) || 'api' !== $parts[0]) {
       return NULL;
     }
-    array_splice($parts, 0, 2);
+    array_shift($parts);
+
+    if (empty($parts)) {
+      return '';
+    }
 
     $apiPath = '/jsonapi/node';
 
