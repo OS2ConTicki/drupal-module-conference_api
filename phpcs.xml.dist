@@ -4,7 +4,6 @@
 
   <file>conference_api.info.yml</file>
   <file>conference_api.routing.yml</file>
-  <file>conference_api.services.yml</file>
   <file>src/</file>
 
   <arg value="p"/>

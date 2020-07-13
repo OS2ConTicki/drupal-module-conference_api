@@ -1,8 +1,17 @@
 conference_api.api_controller_index:
-  path: '/api/{path}'
+  path: '/api/{type}/{id}'
   defaults:
     _controller: '\Drupal\conference_api\Controller\ApiController::index'
     _title: 'Conference API'
-    path: ~
+    type: ~
+    id: ~
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
+
+conference_api.admin_config:
+  path: '/admin/config/services/conference_api'
+  defaults:
+    _form: '\Drupal\conference_api\Form\ConfigForm'
+    _title: 'Conference API configuration'
+  requirements:
+    _permission: 'administer site configuration'

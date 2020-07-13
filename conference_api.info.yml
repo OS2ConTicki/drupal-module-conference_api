@@ -6,3 +6,5 @@ package: Conference
 # version: VERSION
 dependencies:
   - drupal:jsonapi
+
+configure: conference_api.admin_config
